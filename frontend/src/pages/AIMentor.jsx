@@ -68,27 +68,31 @@ function AIMentor() {
 
     return (
 
-        <div
-            className="
-            relative
-            min-h-screen
-            bg-slate-950
-            overflow-hidden
-            "
-        >
+      <div
+    className="
+    fixed
+    inset-0
+    bg-slate-950
+    overflow-hidden
+    "
+>
 
             <HeroBackground />
 
             <div
-                className="
-                relative
-                z-10
-                max-w-5xl
-                mx-auto
-                pt-32
-                px-6
-                "
-            >
+    className="
+    relative
+    z-10
+    max-w-5xl
+    h-screen
+    mx-auto
+    pt-24
+    px-6
+    pb-6
+    flex
+    flex-col
+    "
+>
 
                 <h1
                     className="
@@ -109,7 +113,8 @@ function AIMentor() {
                     border-slate-800
                     rounded-3xl
                     p-8
-                    h-[600px]
+                   flex-1
+min-h-0
                     flex
                     flex-col
                     "
@@ -184,13 +189,15 @@ function AIMentor() {
 
                     </div>
 
+                   
                     <div
-                        className="
-                        flex
-                        gap-4
-                        mt-6
-                        "
-                    >
+    className="
+    flex
+    gap-4
+    mt-6
+    flex-shrink-0
+    "
+>
 
                         <input
 
