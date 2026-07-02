@@ -3,267 +3,86 @@ import API from "../services/api";
 import HeroBackground from "../components/HeroBackground";
 
 function AIMentor() {
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [chat, setChat] = useState([]);
 
-    const [message, setMessage] = useState("");
+  const sendMessage = async () => {
+    if (!message.trim()) return;
 
-    const [loading, setLoading] = useState(false);
+    const userMessage = message;
 
-    const [chat, setChat] = useState([]);
+    setChat((prev) => [...prev, { role: "user", text: userMessage }]);
+    setMessage("");
+    setLoading(true);
 
-    const sendMessage = async () => {
+    try {
+      const res = await API.post("/ai/chat", { message: userMessage });
+      setChat((prev) => [...prev, { role: "ai", text: res.data.reply }]);
+    } catch (error) {
+      console.log(error);
+    }
 
-        if (!message.trim()) return;
+    setLoading(false);
+  };
 
-        const userMessage = message;
+  return (
+    <div className="fixed inset-0 h-full w-full bg-slate-950 overflow-hidden">
+      <HeroBackground />
 
-        setChat((prev) => [
+      <div className="relative z-10 h-full max-w-5xl mx-auto pt-24 px-6 pb-6 flex flex-col min-h-0">
+        <h1 className="text-5xl text-white font-bold mb-8 flex-shrink-0">
+          ✨ Lumi AI Mentor
+        </h1>
 
-            ...prev,
-
-            {
-                role: "user",
-                text: userMessage
-            }
-
-        ]);
-
-        setMessage("");
-
-        setLoading(true);
-
-        try {
-
-            const res = await API.post(
-
-                "/ai/chat",
-
-                {
-                    message: userMessage
-                }
-
-            );
-
-            setChat((prev) => [
-
-                ...prev,
-
-                {
-                    role: "ai",
-                    text: res.data.reply
-                }
-
-            ]);
-
-        }
-
-        catch (error) {
-
-            console.log(error);
-
-        }
-
-        setLoading(false);
-
-    };
-
-    return (
-
-      <div
-    className="
-    fixed
-    inset-0
-    bg-slate-950
-    overflow-hidden
-    "
->
-
-            <HeroBackground />
-
-            <div
-    className="
-    relative
-    z-10
-    max-w-5xl
-    h-screen
-    mx-auto
-    pt-24
-    px-6
-    pb-6
-    flex
-    flex-col
-    "
->
-
-                <h1
-                    className="
-                    text-5xl
-                    text-white
-                    font-bold
-                    mb-8
-                    "
-                >
-                   ✨ Lumi AI Mentor
-                </h1>
-
+        <div className="bg-slate-900/70 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 flex-1 min-h-0 flex flex-col">
+          {/* THE FIX: min-h-0 added here so this div can actually shrink and scroll */}
+          <div className="flex-1 min-h-0 overflow-y-auto space-y-5 pr-2">
+            {chat.map((msg, index) => (
+              <div
+                key={index}
+                className={msg.role === "user" ? "flex justify-end" : "flex justify-start"}
+              >
                 <div
-                    className="
-                    bg-slate-900/70
-                    backdrop-blur-xl
-                    border
-                    border-slate-800
-                    rounded-3xl
-                    p-8
-                   flex-1
-min-h-0
-                    flex
-                    flex-col
-                    "
+                  className={
+                    msg.role === "user"
+                      ? "max-w-[70%] bg-indigo-600 text-white p-4 rounded-3xl"
+                      : "max-w-[70%] bg-slate-800 text-white p-4 rounded-3xl"
+                  }
                 >
-
-                    <div
-                        className="
-                        flex-1
-                        overflow-y-auto
-                        space-y-5
-                        "
-                    >
-
-                        {
-
-                            chat.map((msg, index) => (
-
-                                <div
-                                    key={index}
-                                    className={
-
-                                        msg.role === "user"
-
-                                            ? "flex justify-end"
-
-                                            : "flex justify-start"
-
-                                    }
-                                >
-
-                                    <div
-                                        className={
-
-                                            msg.role === "user"
-
-                                                ?
-
-                                                "max-w-[70%] bg-indigo-600 text-white p-4 rounded-3xl"
-
-                                                :
-
-                                                "max-w-[70%] bg-slate-800 text-white p-4 rounded-3xl"
-
-                                        }
-                                    >
-
-                                        {msg.text}
-
-                                    </div>
-
-                                </div>
-
-                            ))
-
-                        }
-
-                        {
-
-                            loading && (
-
-                                <div
-                                    className="
-                                    text-slate-400
-                                    "
-                                >
-                                    AI is thinking...
-                                </div>
-
-                            )
-
-                        }
-
-                    </div>
-
-                   
-                    <div
-    className="
-    flex
-    gap-4
-    mt-6
-    flex-shrink-0
-    "
->
-
-                        <input
-
-                            value={message}
-
-                            onChange={(e) =>
-                                setMessage(
-                                    e.target.value
-                                )
-                            }
-
-                            onKeyDown={(e) => {
-
-                                if (
-
-                                    e.key === "Enter"
-
-                                ) {
-
-                                    sendMessage();
-
-                                }
-
-                            }}
-
-                            placeholder="Ask anything..."
-
-                            className="
-                            flex-1
-                            bg-slate-800
-                            p-4
-                            rounded-2xl
-                            text-white
-                            outline-none
-                            "
-
-                        />
-
-                        <button
-
-                            onClick={sendMessage}
-
-                            className="
-                            bg-indigo-600
-                            hover:bg-indigo-500
-                            px-8
-                            rounded-2xl
-                            text-white
-                            "
-
-                        >
-
-                            Send
-
-                        </button>
-
-                    </div>
-
+                  {msg.text}
                 </div>
+              </div>
+            ))}
 
-            </div>
+            {loading && (
+              <div className="text-slate-400">AI is thinking...</div>
+            )}
+          </div>
 
+          <div className="flex gap-4 mt-6 flex-shrink-0">
+            <input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
+                }
+              }}
+              placeholder="Ask anything..."
+              className="flex-1 bg-slate-800 p-4 rounded-2xl text-white outline-none"
+            />
+            <button
+              onClick={sendMessage}
+              className="bg-indigo-600 hover:bg-indigo-500 px-8 rounded-2xl text-white"
+            >
+              Send
+            </button>
+          </div>
         </div>
-
-    );
-
+      </div>
+    </div>
+  );
 }
 
 export default AIMentor;
